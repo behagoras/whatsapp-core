@@ -1,3 +1,10 @@
+src/session.json
+src/session.json
+src/mocks/clients
+src/reports/not_received.txt
+src/reports/received.txt
+.env
+
 # Logs
 logs
 *.log
@@ -115,4 +122,3 @@ dist
 .pnp.*
 
 
-src/session.json
