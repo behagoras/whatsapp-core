@@ -8,6 +8,8 @@ const {
   Chat,
 } = require('whatsapp-web.js');
 
+const socket = require('socket.io-client')('http://localhost:3001');
+
 
 // const pingPong = require('./utils/pingPong');
 const sendMessagesInBatch = require('./utils/sendMessagesInBatch');
@@ -31,6 +33,17 @@ const client = new Client({
 // This object must include WABrowserId, WASecretBundle, WAToken1 and WAToken2.
 
 client.initialize().then(() => {});
+
+
+socket.emit('chat', { message: 'hola' });
+socket.on('sendBulkMessages', (message) => {
+  const { to, minutes } = message;
+  console.log('message received', message);
+  if (to && minutes) {
+    sendMessagesInBatch({ to, minutes }, client);
+  }
+});
+
 
 client.on('qr', (qr) => {
   // NOTE: This event will not be fired if a session is specified.
@@ -57,10 +70,10 @@ client.on('auth_failure', (msg) => {
 });
 
 client.on('ready', () => {
-  sendMessagesInBatch({
-    to: 30,
-    minutes: 10,
-  }, client);
+  // sendMessagesInBatch({
+  //   to: 0,
+  //   minutes: 10,
+  // }, client);
   console.log('READY');
   console.log('PROCESO TERMINADO CON ÉXITO');
 });

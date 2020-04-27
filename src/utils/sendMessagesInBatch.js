@@ -33,7 +33,7 @@ const sendMessagesInBatch = async ({ to, minutes }, client) => {
       // replied,
     } = customer;
 
-    const messages = getMessage(name, usted, prefix);
+    const message = getMessage(name, usted, prefix);
     const whatsapp = `521${phone}@c.us`;
     const time = minutes ? Math.random() * 60000 * minutes : Math.random() * 10000;
     // eslint-disable-next-line no-underscore-dangle
@@ -44,14 +44,9 @@ const sendMessagesInBatch = async ({ to, minutes }, client) => {
     setTimeout(async () => {
       try {
         console.log(chalk.cyan('whatsapp', whatsapp));
-        // console.log(customer);
-        console.log(clientUid);
-        await messages.forEach(async (message) => {
-          // const timeout = Math.random() * 1000;
-          // setTimeout(async () => {
-          await client.sendMessage(whatsapp, message);
-          // }, timeout);
-        });
+
+        await client.sendMessage(whatsapp, message);
+
         mongo.update('clients', clientUid, { whatsapp, sent: getFormattedDates(new Date()) })
           .then((c) => {
             console.log(cSuccess(`Message sent to ${name} with the id #${c}`), `whatsapp marked as {whatsapp:${whatsapp}}`);
@@ -64,6 +59,7 @@ const sendMessagesInBatch = async ({ to, minutes }, client) => {
               });
           });
       } catch (error) {
+        console.error(cError(error, whatsapp));
         mongo.update('clients', clientUid, { whatsapp: false, estatus: 'no whatsapp', sent: getFormattedDates(new Date()) })
           .then((c) => {
             console.error(cError(`Message not sent to ${fullName} with the id #${c}`), 'whatsapp marked as false {whatsapp:false}');
