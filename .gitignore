@@ -122,3 +122,6 @@ dist
 .pnp.*
 
 
+session.json
+src/mocks/*
+./src/lib/testDb.js

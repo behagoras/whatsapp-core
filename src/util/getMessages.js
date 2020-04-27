@@ -30,7 +30,7 @@ const getMessage = (name, usted, prefix) => {
       nombre = `Sra ${name}`;
     }
   }
-  return `Hola ${nombre} ${usted ? messageUsted : messageTu}`;
+  return [`Hola ${nombre} ${usted ? messageUsted : messageTu}`];
 };
 
 module.exports = getMessage;
