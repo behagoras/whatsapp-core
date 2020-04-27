@@ -9,9 +9,9 @@ const {
 } = require('whatsapp-web.js');
 
 
-// const pingPong = require('./util/pingPong');
-const sendMessagesInBatch = require('./util/sendMessagesInBatch');
-const messageSent = require('./util/messageSent');
+// const pingPong = require('./utils/pingPong');
+const sendMessagesInBatch = require('./utils/sendMessagesInBatch');
+const messageSent = require('./utils/messageSent');
 
 const SESSION_FILE_PATH = './session.json';
 let sessionCfg;
