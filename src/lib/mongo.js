@@ -43,6 +43,11 @@ class MongoLib {
     return this.connect().then((db) => db.collection(collection).findOne({ _id: ObjectId(id) }));
   }
 
+  getFrom(collection, query) {
+    return this.connect().then((db) => db.collection(collection)
+      .findOne(query));
+  }
+
   create(collection, data) {
     return this.connect()
       .then((db) => db.collection(collection).insertOne(data))
@@ -55,6 +60,24 @@ class MongoLib {
         .collection(collection)
         .updateOne({ _id: ObjectId(id) }, { $set: data }, { upsert: false }))
       .then((result) => result.upsertedId || id);
+  }
+
+  updateFromPhone(collection, phone, set, unset) {
+    const updateQuery = [];
+    if (set) updateQuery.push({ $set: set });
+    if (unset) updateQuery.push({ $unset: unset });
+    return this.connect()
+      .then((db) => db
+        .collection(collection)
+        .updateMany(
+          { phone },
+          updateQuery,
+          {
+            upsert: false,
+          },
+        ))
+      .then((result) => result.upsertedId || phone)
+      .catch((error) => console.log(error));
   }
 
   delete(collection, id) {

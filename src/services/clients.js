@@ -18,6 +18,13 @@ class ClientsService {
     return client || {};
   }
 
+  async getClientFromPhone(phone) {
+    // console.log(phone);
+    // console.log(phone);
+    const client = await this.mongoDB.getAll(this.collection, { phone });
+    return client || {};
+  }
+
   async createClient({ client }) {
     const createClientId = await this.mongoDB.create(this.collection, client);
     return createClientId;
@@ -28,6 +35,16 @@ class ClientsService {
       this.collection,
       clientUid,
       client,
+    );
+    return updatedClientUid;
+  }
+
+  async updateClientFromPhone({ phone, set, unset } = {}) {
+    const updatedClientUid = await this.mongoDB.updateFromPhone(
+      this.collection,
+      phone,
+      set,
+      unset,
     );
     return updatedClientUid;
   }
