@@ -1,8 +1,12 @@
 src/session.json
 src/session.json
 src/mocks/clients
+src/reports
 src/reports/not_received.txt
 src/reports/received.txt
+src/reports/already_sent.txt
+src/private
+
 .env
 
 # Logs
