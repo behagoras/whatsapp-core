@@ -1,5 +1,4 @@
 /* eslint-disable no-loop-func */
-/* eslint-disable no-console */
 const chalk = require('chalk');
 
 const cError = chalk.bold.red;
@@ -17,7 +16,9 @@ const getFormattedDates = require('./getFormattedDates');
 const mongo = new MongoLib();
 
 const sendMessagesInBatch = async ({ to, minutes }, client) => {
-  const customers = await mongo.getAll('clients', { sent: false, whatsapp: { $not: { $eq: false } } });
+  // eslint-disable-next-line max-len
+  // const customers = await mongo.getAll('clients', { sent: false, whatsapp: { $not: { $eq: false } } });
+  const customers = await mongo.getAll('clients', { whatsapp: { $exists: true, $ne: false }, messages: { $exists: false } });
   // console.log('Mundo de clientes', customers);
   for (let index = 0; index < to; index += 1) {
     const customer = customers[index];
@@ -28,7 +29,7 @@ const sendMessagesInBatch = async ({ to, minutes }, client) => {
       // send,
       phone,
       fullName,
-      sent,
+      // sent,
       // received,
       // replied,
     } = customer;
@@ -36,7 +37,6 @@ const sendMessagesInBatch = async ({ to, minutes }, client) => {
     const message = getMessage(name, usted, prefix);
     const whatsapp = `521${phone}@c.us`;
     const time = minutes ? Math.random() * 60000 * minutes : Math.random() * 10000;
-    // eslint-disable-next-line no-underscore-dangle
     const clientUid = customer._id;
 
     console.log(index, time / 1000 / 60, fullName);
@@ -44,10 +44,18 @@ const sendMessagesInBatch = async ({ to, minutes }, client) => {
     setTimeout(async () => {
       try {
         console.log(chalk.cyan('whatsapp', whatsapp));
-
         await client.sendMessage(whatsapp, message);
 
-        mongo.update('clients', clientUid, { whatsapp, sent: getFormattedDates(new Date()) })
+        mongo.update(
+          'clients',
+          clientUid,
+          {
+            $push: { messages: 3 },
+            whatsapp,
+            sent: new Date(),
+            ack: 0,
+          },
+        )
           .then((c) => {
             console.log(cSuccess(`Message sent to ${name} with the id #${c}`), `whatsapp marked as {whatsapp:${whatsapp}}`);
             const logMessage = `${clientUid}:${fullName},${phone}\n`;

@@ -12,7 +12,6 @@ clientService.getClient({ clientUid: '5ea3c074a321458549f68c3c' }).then((client)
 // // { sent: true }
 // mongo.getAll('clients', { sent: true }).then((clients) => {
 //   clients.forEach((client) => {
-//     // eslint-disable-next-line no-underscore-dangle
 //     const clientUid = client._id;
 //     const sent = new Date() - 1;
 //     console.log(client);
@@ -32,7 +31,6 @@ clientService.getClient({ clientUid: '5ea3c074a321458549f68c3c' }).then((client)
 // // { $not: { $gt: 0 } }
 // mongo.getAll('clients', { sent: { $gt: 0 } }).then((clients) => {
 //   clients.forEach((client) => {
-//     // eslint-disable-next-line no-underscore-dangle
 //     const clientUid = client._id;
 //     // console.log(client.phone);
 //     const whatsapp = `521${client.phone}@c.us`;
