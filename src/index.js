@@ -6,7 +6,7 @@ const {
 const socket = require('socket.io-client')('http://localhost:3001');
 
 const messageAck = require('./utils/messageAck');
-// const messageReceived = require('./utils/messageReceived');
+const messageReceived = require('./utils/messageReceived');
 
 // const pingPong = require('./utils/pingPong');
 const sendMessagesInBatch = require('./utils/sendMessagesInBatch');
@@ -76,7 +76,7 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
-  // messageReceived(message);
+  messageReceived(message);
 });
 
 client.on('message_create', (msg) => {
