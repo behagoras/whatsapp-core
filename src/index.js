@@ -1,15 +1,12 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-console */
-
 const fs = require('fs');
 const {
   Client,
-  Location,
-  Chat,
 } = require('whatsapp-web.js');
 
 const socket = require('socket.io-client')('http://localhost:3001');
 
+const messageAck = require('./utils/messageAck');
+// const messageReceived = require('./utils/messageReceived');
 
 // const pingPong = require('./utils/pingPong');
 const sendMessagesInBatch = require('./utils/sendMessagesInBatch');
@@ -79,12 +76,7 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
-  const {
-    body, from, to, fromMe,
-  } = message;
-  console.log('MESSAGE RECEIVED', {
-    from, to, fromMe, body,
-  });
+  // messageReceived(message);
 });
 
 client.on('message_create', (msg) => {
@@ -105,20 +97,8 @@ client.on('message_revoke_me', async (msg) => {
   console.log(msg.body); // message before it was deleted.
 });
 
-client.on('message_ack', (msg, ack) => {
-  /*
-        === ACK VALUES ==
-        ACK_ERROR: -1
-        ACK_PENDING: 0
-        ACK_SERVER: 1
-        ACK_DEVICE: 2
-        ACK_READ: 3
-        ACK_PLAYED: 4
-    */
-
-  if (ack === 3) {
-    // The message was read
-  }
+client.on('message_ack', async (message, ack) => {
+  messageAck(message, ack);
 });
 
 client.on('group_join', (notification) => {
