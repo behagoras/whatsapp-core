@@ -1,12 +1,18 @@
+const Mustache = require('mustache');
+
 const messageUsted = `
+En este día tan especial {{nombre}}, le quiero desear todo lo mejor, que siempre tengamos muchos motivos para celebrar y festejemos el regalo de la vida
 
-Perdón por mi mensaje anterior.
+Feliz día de las madres
 
-Hablé con las paqueterías y me dicen que si enviamos paquetes hasta el jueves, alcanzaría a llegar para el día de las madres, quieres que te envíe algo?
+😍🙏🤗💐🌷
 `;
 const messageTu = `
+En este día tan especial {{nombre}}, te quiero desear todo lo mejor, que siempre tengamos muchos motivos para celebrar y festejemos el regalo de la vida
 
-Hablé con las paqueterías y me dicen que si enviamos paquetes hasta el jueves, alcanzaría a llegar para el día de las madres, quieres que te envíe algo?
+Feliz día de las madres
+
+😍🙏🤗💐🌷
 `;
 
 const getMessage = (name, usted, prefix) => {
@@ -18,7 +24,11 @@ const getMessage = (name, usted, prefix) => {
       nombre = `Sra ${name}`;
     }
   }
-  return `¡Hola ${nombre}! ${usted ? messageUsted : messageTu}`;
+  const cliente = {
+    nombre, usted, prefix,
+  };
+  return Mustache.render(usted ? messageUsted : messageTu, cliente);
+  // return `¡Hola ${nombre}! ${usted ? messageUsted : messageTu}`;
 };
 
 module.exports = getMessage;
