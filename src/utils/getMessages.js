@@ -1,21 +1,25 @@
 const Mustache = require('mustache');
+const path = require('path');
 
-const messageUsted = `
-En este día tan especial {{nombre}}, le quiero desear todo lo mejor, que siempre tengamos muchos motivos para celebrar y festejemos el regalo de la vida
+const messageUsted = `¡Hola {{nombre}}, Feliz Navidad y próspero año nuevo!
 
-Feliz día de las madres
+Para este fin de año me llegaron cosas bien bonitas.
 
-😍🙏🤗💐🌷
+Es momento de apoyarnos sacando una oportunidad de este momento de crisis, de estar mejor y de salir adelante.
+
+Por esto decidí que desde hoy *hasta el 31 de enero*, en la compra de $2,000 pesos o más:
+
+*¡EL ENVÍO VA POR MI CUENTA!*.
+
+Espero te animes, te mando un fuerte abrazo y felices fiestas 🥳 🎈🎉.
+
+Dime porfa si quieres que te mande el catálogo.
 `;
-const messageTu = `
-En este día tan especial {{nombre}}, te quiero desear todo lo mejor, que siempre tengamos muchos motivos para celebrar y festejemos el regalo de la vida
+const messageTu = messageUsted;
 
-Feliz día de las madres
+const audioUrl = path.join(__dirname, '../../media/mensaje-1.ogg');
 
-😍🙏🤗💐🌷
-`;
-
-const getMessage = (name, usted, prefix) => {
+const getMessages = (name, usted, prefix) => {
   let nombre = name;
   if (usted) {
     if (prefix === 'Sr') {
@@ -27,8 +31,14 @@ const getMessage = (name, usted, prefix) => {
   const cliente = {
     nombre, usted, prefix,
   };
-  return Mustache.render(usted ? messageUsted : messageTu, cliente);
+
+  console.log('getMessages function');
+
+  return {
+    message: Mustache.render(usted ? messageUsted : messageTu, cliente),
+    // audioUrl: audioUrl || null,
+  };
   // return `¡Hola ${nombre}! ${usted ? messageUsted : messageTu}`;
 };
 
-module.exports = getMessage;
+module.exports = getMessages;

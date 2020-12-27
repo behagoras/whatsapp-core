@@ -1,12 +1,16 @@
+const Mustache = require('mustache');
 const ClientsService = require('../services/clients');
 const MongoLib = require('./mongo');
+
+const getMessage = require('../utils/getMessages');
+
 
 const clientService = new ClientsService();
 const mongo = new MongoLib();
 
-clientService.getClient({ clientUid: '5ea3c074a321458549f68c3c' }).then((client) => {
-  console.log(client);
-});
+// clientService.getClient({ clientUid: '5ea3c074a321458549f68c3c' }).then((client) => {
+//   console.log(client);
+// });
 
 // // { $exists: true, $not: { $gt: 0 } }
 // // { sent: true }
@@ -22,10 +26,10 @@ clientService.getClient({ clientUid: '5ea3c074a321458549f68c3c' }).then((client)
 //   });
 // });
 
-(async () => {
-  const clients = await mongo.getAll('clients', { sent: false });
-  console.log('Mundo de clientes', clients);
-})();
+// (async () => {
+//   const clients = await mongo.getAll('clients', { sent: false });
+//   console.log('Mundo de clientes', clients);
+// })();
 
 
 // // { $not: { $gt: 0 } }
@@ -40,3 +44,22 @@ clientService.getClient({ clientUid: '5ea3c074a321458549f68c3c' }).then((client)
 //     //   });
 //   });
 // });
+
+
+// const output = Mustache.render('Hola {{prefix}} {{name}} {{lastName}}, cómo se encuentra', { name: 'David', lastName: 'Behar', prefix: 'Sr' });
+
+const output = getMessage('David', true, 'Sr');
+
+console.log(output);
+
+
+mongo.update(
+  'clients',
+  '5ea3c074a321458549f68c3c',
+  {
+    ack: 0,
+  },
+  { messages: 'return-to-business' },
+).then((c) => {
+  console.log(c);
+});

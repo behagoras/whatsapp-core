@@ -1,12 +1,14 @@
 const fs = require('fs');
-const {
-  Client,
-} = require('whatsapp-web.js');
+const { Client } = require('whatsapp-web.js');
+
+const path = require('path');
 
 const socket = require('socket.io-client')('http://localhost:3001');
 
 const messageAck = require('./utils/messageAck');
 const messageReceived = require('./utils/messageReceived');
+
+const sendAudioMessage = require('./utils/sendAudioMessage');
 
 // const pingPong = require('./utils/pingPong');
 const sendMessagesInBatch = require('./utils/sendMessagesInBatch');
@@ -31,28 +33,38 @@ const client = new Client({
 
 client.initialize().then(() => {});
 
-
 socket.emit('chat', { message: 'hola' });
 socket.on('sendBulkMessages', (message) => {
-  const { to, minutes } = message;
+  const {
+    to,
+    minutes,
+    message: clientMessage,
+    campaign,
+  } = message;
   console.log('message received', message);
   if (to && minutes) {
-    sendMessagesInBatch({ to, minutes }, client);
+    sendMessagesInBatch({
+      to,
+      minutes,
+      clientMessage,
+      campaign,
+    },
+    client);
   }
 });
-
 
 client.on('qr', (qr) => {
   // NOTE: This event will not be fired if a session is specified.
   console.log('QR RECEIVED', qr);
 });
 
-client.getChats().then((chats) => {
-  console.log('super chats', chats);
-});
+// client.getChats().then((chats) => {
+//   console.log('super chats', chats);
+// });
 
 client.on('authenticated', (session) => {
   console.log('AUTHENTICATED', session);
+  console.log("client.on('authenticated'");
   sessionCfg = session;
   fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
     if (err) {
@@ -71,11 +83,22 @@ client.on('ready', () => {
   //   to: 0,
   //   minutes: 10,
   // }, client);
-  console.log('READY');
-  console.log('PROCESO TERMINADO CON ÉXITO');
+  console.log('Ready app');
+
+  const audioUrl = path.join(__dirname, '../media/mensaje-1.ogg');
+
+  // sendAudioMessage(client, '5215516988310@c.us', audioUrl)
+  //   .then((message) => {
+  //     console.log(`The message with the message ${JSON.stringify(message)} has being sent`);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
 });
 
 client.on('message', async (message) => {
+  console.log('READY');
+  console.log('PROCESO TERMINADO CON ÉXITO');
   messageReceived(message);
 });
 
