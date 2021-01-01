@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const { MongoClient, ObjectId } = require('mongodb');
 const { config } = require('../config');
 
@@ -6,7 +7,6 @@ const PASSWORD = encodeURIComponent(config.dbPassword);
 const DB_NAME = config.dbName;
 
 const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}/${DB_NAME}?retryWrites=true&w=majority`;
-console.log('MONGO_URI: ', MONGO_URI);
 
 // const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${DB_NAME}?retryWrites=true&w=majority`;
 
@@ -84,7 +84,7 @@ class MongoLib {
           },
         ))
       .then((result) => result.upsertedId || phone)
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(chalk.bold.red(error)));
   }
 
   delete(collection, id) {

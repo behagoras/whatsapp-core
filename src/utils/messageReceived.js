@@ -23,10 +23,13 @@ const messageReceived = async (message) => {
   const {
     body, from, to, fromMe,
   } = message;
-  console.log('MESSAGE RECEIVED', {
-    from, to, fromMe, body,
-  });
-  console.log(message);
+  console.log(chalk.cyan(
+    'MESSAGE RECEIVED',
+    `from: ${from}, to: ${to}`,
+    `From me? ${fromMe}`,
+    'Message: ',
+    body,
+  ));
   if (!fromMe) {
     try {
       const customers = await mongo.getAll('clients', { whatsapp: from });
@@ -44,7 +47,6 @@ const messageReceived = async (message) => {
           .then((c) => {
             console.log(cSuccess(`Message received by ${name} with the id #${c}`), `ack marked as {whatsapp:${to}}`);
             const logMessage = `${clientUid}:${fullName},${phone}\n`;
-
             fs.appendFile('./src/reports/message-received.txt', logMessage, 'utf8',
               (err) => {
                 if (err) throw err;

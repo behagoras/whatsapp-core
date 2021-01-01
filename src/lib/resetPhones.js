@@ -8,12 +8,10 @@ const resetPhones = (phones) => phones.forEach((phone) => {
   const set = { sent: false };
   clientService.updateClientFromPhone({ phone, unset, set })
     .then((data) => {
-      console.log(data);
+      console.log('resetPhones.js ~ updateClientFromPhone ~ updatedClientUid', data);
       return data;
     });
 });
 
-console.log(errorPhones.length);
+console.log('errorPhones.length', errorPhones.length);
 resetPhones(errorPhones);
-
-// module.exports = resetPhones;

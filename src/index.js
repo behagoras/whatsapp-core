@@ -1,16 +1,9 @@
 const fs = require('fs');
 const { Client } = require('whatsapp-web.js');
-
-const path = require('path');
-
 const socket = require('socket.io-client')('http://localhost:3001');
 
 const messageAck = require('./utils/messageAck');
 const messageReceived = require('./utils/messageReceived');
-
-const sendAudioMessage = require('./utils/sendAudioMessage');
-
-// const pingPong = require('./utils/pingPong');
 const sendMessagesInBatch = require('./utils/sendMessagesInBatch');
 const messageSent = require('./utils/messageSent');
 
@@ -41,7 +34,6 @@ socket.on('sendBulkMessages', (message) => {
     message: clientMessage,
     campaign,
   } = message;
-  console.log('message received', message);
   if (to && minutes) {
     sendMessagesInBatch({
       to,
@@ -64,7 +56,6 @@ client.on('qr', (qr) => {
 
 client.on('authenticated', (session) => {
   console.log('AUTHENTICATED', session);
-  console.log("client.on('authenticated'");
   sessionCfg = session;
   fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
     if (err) {
@@ -79,26 +70,11 @@ client.on('auth_failure', (msg) => {
 });
 
 client.on('ready', () => {
-  // sendMessagesInBatch({
-  //   to: 0,
-  //   minutes: 10,
-  // }, client);
   console.log('Ready app');
-
-  const audioUrl = path.join(__dirname, '../media/mensaje-1.ogg');
-
-  // sendAudioMessage(client, '5215516988310@c.us', audioUrl)
-  //   .then((message) => {
-  //     console.log(`The message with the message ${JSON.stringify(message)} has being sent`);
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   });
 });
 
 client.on('message', async (message) => {
-  console.log('READY');
-  console.log('PROCESO TERMINADO CON ÉXITO');
+  console.log('client.on(message)');
   messageReceived(message);
 });
 
@@ -109,15 +85,15 @@ client.on('message_create', (msg) => {
 
 client.on('message_revoke_everyone', async (after, before) => {
   // Fired whenever a message is deleted by anyone (including you)
-  console.log(after); // message after it was deleted.
+  console.log('message after it was deleted:', after);
   if (before) {
-    console.log(before); // message before it was deleted.
+    console.log('message before it was deleted:', before);
   }
 });
 
 client.on('message_revoke_me', async (msg) => {
   // Fired whenever a message is only deleted in your own view.
-  console.log(msg.body); // message before it was deleted.
+  console.log('message before it was deleted:', msg.body);
 });
 
 client.on('message_ack', async (message, ack) => {
@@ -126,19 +102,18 @@ client.on('message_ack', async (message, ack) => {
 
 client.on('group_join', (notification) => {
   // User has joined or been added to the group.
-  console.log('join', notification);
+  console.log('joined to group, notification = ', notification);
   // notification.reply('User joined.');
 });
 
 client.on('group_leave', (notification) => {
-  // User has left or been kicked from the group.
-  console.log('leave', notification);
+  console.log('User has left or been kicked from the group, notification = ', notification);
   // notification.reply('User left.');
 });
 
 client.on('group_update', (notification) => {
   // Group picture, subject or description has been updated.
-  console.log('update', notification);
+  console.log('Group picture, subject or description has been updated, notification = ', notification);
 });
 
 client.on('change_battery', (batteryInfo) => {
@@ -151,5 +126,5 @@ client.on('change_battery', (batteryInfo) => {
 });
 
 client.on('disconnected', (reason) => {
-  console.log('Client was logged out', reason);
+  console.log('Client was logged out because', reason);
 });

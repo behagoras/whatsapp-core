@@ -33,7 +33,6 @@ const messageAck = async (message, ack) => {
   console.log('messageAck', ack, ackValues[ack]);
   try {
     const customers = await mongo.getAll('clients', { whatsapp });
-    console.log('Mundo de clientes', customers);
     const customer = customers[0];
     const {
       name,
@@ -41,13 +40,10 @@ const messageAck = async (message, ack) => {
       fullName,
     } = customer;
     const clientUid = customer._id;
-
-    console.log(chalk.cyan('whatsapp', whatsapp));
     mongo.update('clients', clientUid, { ack })
       .then((c) => {
         console.log(cSuccess(`Message received by ${name} with the id #${c}`), `ack marked as {whatsapp:${whatsapp}}`);
         const logMessage = `${clientUid}:${fullName},${phone}\n`;
-
         fs.appendFile('./src/reports/ack.txt', logMessage, 'utf8',
           (err) => {
             if (err) throw err;

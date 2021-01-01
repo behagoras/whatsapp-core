@@ -19,8 +19,6 @@ class ClientsService {
   }
 
   async getClientFromPhone(phone) {
-    // console.log(phone);
-    // console.log(phone);
     const client = await this.mongoDB.getAll(this.collection, { phone });
     return client || {};
   }

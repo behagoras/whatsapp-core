@@ -33,6 +33,11 @@ const sendMessagesInBatch = async ({
   };
   const customers = await mongo.getAll('clients', query);
 
+  const getWhatsappFromCustomer = ({ phone, whatsapp }) => {
+    if (whatsapp) return whatsapp;
+    if (phone) return `521${phone}@c.us`;
+    return undefined;
+  };
 
   for (let index = 0; index < to; index += 1) {
     const customer = customers[index] || {};
@@ -43,65 +48,64 @@ const sendMessagesInBatch = async ({
       phone,
       fullName,
     } = customer;
-
-    const getMessagesObject = getMessages(name, usted, prefix);
-    let { message, audioUrl } = getMessagesObject;
-    if (clientMessage) message = clientMessage;
-    if (clientAudioUrl) audioUrl = clientAudioUrl;
-    const whatsapp = `521${phone}@c.us`;
+    const { message, audioUrl } = getMessages(name, usted, prefix, clientMessage);
+    const whatsapp = getWhatsappFromCustomer(customer);
     const time = minutes ? Math.random() * 60000 * minutes : Math.random() * 10000;
     const clientUid = customer._id;
 
     console.log(index, time / 1000 / 60, fullName);
 
-    setTimeout(async () => {
-      try {
-        console.log(chalk.cyan('whatsapp', whatsapp));
-        await client.sendMessage(whatsapp, message);
-        if (audioUrl) {
-          sendAudioMessage(client, whatsapp, audioUrl);
-        }
-        mongo.update(
-          'clients',
-          clientUid,
-          {
-            whatsapp,
-            sent: new Date(),
-            ack: 0,
-          },
-          { messages: campaign },
-        )
-          .then((c) => {
-            console.log('super c', c);
-            console.log(cSuccess(`Message sent to ${name} with the id #${c}`), `whatsapp marked as {whatsapp:${whatsapp}}`);
-            const logMessage = `${clientUid}:${fullName},${phone}\n`;
+    if (whatsapp) {
+      setTimeout(async () => {
+        try {
+          console.log(chalk.cyan('whatsapp', whatsapp));
+          await client.sendMessage(whatsapp, message);
+          if (audioUrl) {
+            sendAudioMessage(client, whatsapp, audioUrl);
+          }
+          mongo.update(
+            'clients',
+            clientUid,
+            {
+              whatsapp,
+              sent: new Date(),
+              ack: 0,
+            },
+            { messages: campaign },
+          )
+            .then((c) => {
+              console.log(cSuccess(`Message sent to ${name} with the id #${c}`), `whatsapp marked as {whatsapp:${whatsapp}}`);
+              const logMessage = `${clientUid}:${fullName},${phone}\n`;
 
-            fs.appendFile('./src/reports/received.txt', logMessage, 'utf8',
-              (err) => {
-                if (err) throw err;
-                console.log('data agregada al archivo', cSuccess('./src/reports/received.txt'), ' con éxito.', cWarning(logMessage));
-              });
-          });
-      } catch (error) {
-        console.error(cError(error, whatsapp));
-        mongo.update('clients',
-          clientUid,
-          {
-            whatsapp: false,
-            estatus: 'no whatsapp',
-            sent: getFormattedDates(new Date()),
-          })
-          .then((c) => {
-            console.error(cError(`Message not sent to ${fullName} with the id #${c}`), 'whatsapp marked as false {whatsapp:false}');
-            const logMessage = `${clientUid}:${fullName},${phone}\n`;
-            fs.appendFile('./src/reports/not_received.txt', logMessage, 'utf8',
-              (err) => {
-                if (err) throw err;
-                console.log('data agregada al archivo', cError('./src/reports/not_received.txt'), ' con éxito.', cWarning(logMessage));
-              });
-          });
-      }
-    }, time);
+              fs.appendFile('./src/reports/received.txt', logMessage, 'utf8',
+                (err) => {
+                  if (err) throw err;
+                  console.log('data agregada al archivo', cSuccess('./src/reports/received.txt'), ' con éxito.', cWarning(logMessage));
+                });
+            });
+        } catch (error) {
+          console.error(cError(error, whatsapp));
+          mongo.update('clients',
+            clientUid,
+            {
+              whatsapp: false,
+              estatus: 'no whatsapp',
+              sent: getFormattedDates(new Date()),
+            })
+            .then((c) => {
+              console.error(cError(`Message not sent to ${fullName} with the id #${c}`), 'whatsapp marked as false {whatsapp:false}');
+              const logMessage = `${clientUid}:${fullName},${phone}\n`;
+              fs.appendFile('./src/reports/not_received.txt', logMessage, 'utf8',
+                (err) => {
+                  if (err) throw err;
+                  console.log('data agregada al archivo', cError('./src/reports/not_received.txt'), ' con éxito.', cWarning(logMessage));
+                });
+            });
+        }
+      }, time);
+    } else {
+      console.log(chalk.orange('the client does not have whatsapp', customer));
+    }
   }
 };
 
