@@ -43,6 +43,10 @@ class MongoLib {
     return this.connect().then((db) => db.collection(collection).findOne({ _id: ObjectId(id) }));
   }
 
+  deleteOne(collection, id) {
+    return this.connect().then((db) => db.collection(collection).deleteOne({ _id: ObjectId(id) }));
+  }
+
   getFrom(collection, query) {
     return this.connect().then((db) => db.collection(collection)
       .findOne(query));
@@ -61,10 +65,21 @@ class MongoLib {
         .updateOne(
           { _id: ObjectId(id) },
           {
-            ...data && { $push: data },
+            ...data && { $set: data },
             ...push && { $push: push },
           },
           { upsert: false },
+        ))
+      .then((result) => result.upsertedId || id);
+  }
+
+  deleteField(collection, id, field) {
+    return this.connect()
+      .then((db) => db
+        .collection(collection)
+        .updateOne(
+          { _id: ObjectId(id) },
+          { $unset: { [field]: 1 } },
         ))
       .then((result) => result.upsertedId || id);
   }

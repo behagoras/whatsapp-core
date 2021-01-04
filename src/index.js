@@ -32,6 +32,7 @@ socket.on('sendBulkMessages', (message) => {
     to,
     minutes,
     message: clientMessage,
+    messages,
     campaign,
   } = message;
   if (to && minutes) {
@@ -40,6 +41,7 @@ socket.on('sendBulkMessages', (message) => {
       minutes,
       clientMessage,
       campaign,
+      messages,
     },
     client);
   }

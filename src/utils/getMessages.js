@@ -20,7 +20,7 @@ const getMessages = (name, usted, prefix, clientMessage) => {
   const message = Mustache.render(clientMessage, cliente);
   return {
     message,
-    // audioUrl: null,
+    audioUrl: null,
     // message: Mustache.render(usted ? messageUsted : messageTu, cliente),
     // audioUrl: audioUrl || null,
   };
